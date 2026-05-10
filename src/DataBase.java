@@ -19,6 +19,16 @@ public class DataBase {
                 "06.10.2006"
         );
 
+        User haura = new User(
+                "Haura",
+                "Hafizhah",
+                "haura",
+                "123",
+                "Business",
+                "teacher",
+                "30.10.2003"
+        );
+
         User pasha = new User(
                 "Pavel",
                 "Goryakin",
@@ -29,7 +39,19 @@ public class DataBase {
                 "05.03.1981"
         );
 
+        User user_admin = new User(
+                "admin",
+                "-----",
+                "admin",
+                "admin",
+                "-----",
+                "admin",
+                "-----"
+        );
+
         users.put(albert.id, albert);
+        users.put(haura.id, haura);
+        users.put(user_admin.id, user_admin);
         users.put(pasha.id, pasha);
 
         ArrayList<Integer> teachers = new ArrayList<>();
@@ -195,23 +217,51 @@ public class DataBase {
     public static User registerUserDB(
             String name,
             String surname,
-            String login,
-            String password,
             String department,
             String post,
             String dateOfBirth
     ) {
-        for (User user : users.values()) {
-            if (user.login.equals(login)) {
-                return null;
+
+        String baseLogin =
+                (name + surname).toLowerCase();
+
+        String basePassword =
+                (name + surname).toLowerCase();
+
+
+        String login;
+
+        int counter = 0;
+
+        boolean exists;
+
+        do {
+
+            exists = false;
+
+            if (counter == 0) {
+                login = baseLogin;
+            } else {
+                login = baseLogin + counter;
             }
-        }
+
+            for (User user : users.values()) {
+
+                if (user.login.equals(login)) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            counter++;
+
+        } while (exists);
 
         User newUser = new User(
                 name,
                 surname,
                 login,
-                password,
+                basePassword,
                 department,
                 post,
                 dateOfBirth

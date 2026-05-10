@@ -76,7 +76,34 @@ public class Main {
     }
 
     public static void showAdminMenu(User user) {
-        System.out.println("Admin menu is empty now.");
+        while (true) {
+            System.out.println("\n========= ADMIN MENU =========");
+            System.out.println("1. Users Management");
+            System.out.println("2. Subjects Management");
+            System.out.println("3. Grades Management");
+            System.out.println("4. Sections Management");
+            System.out.println("0. Back");
+
+            System.out.print("Choose: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    userManagementMenu();
+                    break;
+                case "2":
+                    showSchedule(user);
+                    break;
+                case "3":
+                    showGrades(user);
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("Wrong choice");
+            }
+        }
     }
 
     public static void showStudentProfile(User user) {
@@ -328,7 +355,7 @@ public class Main {
         System.out.println("Grade added!");
     }
 
-    public static void showTeacherGrades(User teacher) {
+    public static boolean showTeacherGrades(User teacher) {
         System.out.println("\n========= MY STUDENTS GRADES =========");
 
         boolean found = false;
@@ -357,57 +384,60 @@ public class Main {
         if (!found) {
             System.out.println("No grades found.");
         }
+        return found;
     }
 
     public static void editGrade(User teacher) {
-        showTeacherGrades(teacher);
+        boolean checker = showTeacherGrades(teacher);
 
-        System.out.print("Write grade ID to edit: ");
-        int gradeId = readInt();
 
-        Grade grade = DataBase.grades.get(gradeId);
+        if (checker) { System.out.print("Write grade ID to edit: ");
+            int gradeId = readInt();
 
-        if (grade == null) {
-            System.out.println("Grade not found.");
-            return;
-        }
+            Grade grade = DataBase.grades.get(gradeId);
 
-        if (!canTeacherAccessGrade(teacher, grade)) {
-            System.out.println("You can't edit this grade.");
-            return;
-        }
+            if (grade == null) {
+                System.out.println("Grade not found.");
+                return;
+            }
 
-        System.out.print("Write new grade: ");
-        float newValue = readFloat();
+            if (!canTeacherAccessGrade(teacher, grade)) {
+                System.out.println("You can't edit this grade.");
+                return;
+            }
 
-        grade.value = newValue;
+            System.out.print("Write new grade: ");
+            float newValue = readFloat();
 
-        System.out.println("Grade updated!");
+            grade.value = newValue;
+
+            System.out.println("Grade updated!");}
+
     }
 
-    public static void deleteGrade(User teacher)
+    public static void deleteGrade(User teacher) {
+        boolean checker = showTeacherGrades(teacher);
 
-    {
-        showTeacherGrades(teacher);
+        if (checker) {
+            System.out.print("Write grade ID to delete: ");
+            int gradeId = readInt();
 
-        System.out.print("Write grade ID to delete: ");
-        int gradeId = readInt();
+            Grade grade = DataBase.grades.get(gradeId);
 
-        Grade grade = DataBase.grades.get(gradeId);
+            if (grade == null) {
+                System.out.println("Grade not found.");
+                return;
+            }
 
-        if (grade == null) {
-            System.out.println("Grade not found.");
-            return;
+            if (!canTeacherAccessGrade(teacher, grade)) {
+                System.out.println("You can't delete this grade.");
+                return;
+            }
+
+            DataBase.deleteGradeDB(gradeId);
+
+            System.out.println("Grade deleted!");
         }
-
-        if (!canTeacherAccessGrade(teacher, grade)) {
-            System.out.println("You can't delete this grade.");
-            return;
-        }
-
-        DataBase.deleteGradeDB(gradeId);
-
-        System.out.println("Grade deleted!");
     }
 
     public static ArrayList<Section> getTeacherSections(User teacher) {
@@ -493,6 +523,85 @@ public class Main {
 
     // ============== Admin Functions ==============
 
+    public static void userManagementMenu() {
+        while (true) {
+            System.out.println("\n========= USERS MANAGEMENT MENU =========");
+            System.out.println("1. Register a new user");
+            System.out.println("2. Show all users");
+            System.out.println("3. Edit user");
+            System.out.println("4. Delete user");
+            System.out.println("0. Back");
+
+            System.out.print("Choose: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    registerNewUser();
+                    break;
+                case "2":
+                    showAllUsers();
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    break;
+
+                case "0":
+                    return;
+                default:
+                    System.out.println("Wrong choice");
+            }
+
+        }
+    }
+
+    public static void registerNewUser() {
+
+        System.out.println("\n========= REGISTER USER =========");
+
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Surname: ");
+        String surname = scanner.nextLine();
+
+//        System.out.print("Login: ");
+//        String login = scanner.nextLine();
+//
+//        System.out.print("Password: ");
+//        String password = scanner.nextLine();
+
+        System.out.print("Department: ");
+        String department = scanner.nextLine();
+
+        System.out.print("Post (student/teacher/admin): ");
+        String post = scanner.nextLine();
+
+        System.out.print("Birth date: ");
+        String birth = scanner.nextLine();
+
+        User newUser = DataBase.registerUserDB(
+                name,
+                surname,
+                department,
+                post,
+                birth
+        );
+
+        if (newUser == null) {
+            System.out.println("User with this login already exists.");
+        } else {
+            System.out.println("\nUser registered successfully!");
+            System.out.println(
+                    "New user ID: " + newUser.id + "\n" +
+                    "User login: " + newUser.login + "\n" +
+                    "User password: " + newUser.password
+            );
+        }
+    }
+
     public static void showAllUsers() {
         System.out.println("\n========= USERS =========");
 
@@ -502,7 +611,7 @@ public class Main {
             System.out.println(
                     user.id + " | " +
                             user.name + " " +
-                            user.surname
+                            user.surname + " | " + user.post
             );
         }
     }
