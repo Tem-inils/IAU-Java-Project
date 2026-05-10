@@ -127,6 +127,8 @@ public class DataBase {
     }
 
     public static ArrayList<Subject> getAllSubjects() {
+        // [{id: 123, name: "Math", [123123, 123123]}]
+
         return new ArrayList<>(subjects.values());
     }
 
@@ -173,14 +175,6 @@ public class DataBase {
                 System.out.println("Unknown field");
         }
     }
-
-
-
-
-
-
-
-
 
     public static boolean deleteSectionDB(int id) {
         Section removedSection = sections.remove(id);
@@ -294,6 +288,22 @@ public class DataBase {
         return newSection;
     }
 
+    public static Subject createSubjectDB(String name, ArrayList<Integer> teacherIds) {
+        for (Subject subject : subjects.values()) {
+
+            if (subject.name.equals(name)) {
+                return null;
+            }
+
+        }
+
+        Subject newSubject = new Subject(name, teacherIds);
+        subjects.put(newSubject.id, newSubject);
+
+        return newSubject;
+    }
+
+
     public static Section updateSectionDB(
             int id,
             int subjectId,
@@ -400,18 +410,6 @@ public class DataBase {
         return true;
     }
 
-    public static Subject createSubjectDB(String name, ArrayList<Integer> teacherIds) {
-        for (Subject subject : subjects.values()) {
-            if (subject.name.equals(name)) {
-                return null;
-            }
-        }
-
-        Subject newSubject = new Subject(name, teacherIds);
-        subjects.put(newSubject.id, newSubject);
-
-        return newSubject;
-    }
 
     public static Subject getSubjectById(int id) {
         return subjects.get(id);

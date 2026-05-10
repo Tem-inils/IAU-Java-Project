@@ -1,3 +1,4 @@
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -93,7 +94,7 @@ public class Main {
                     userManagementMenu();
                     break;
                 case "2":
-                    showSchedule(user);
+                    subjectManagementMenu();
                     break;
                 case "3":
                     showGrades(user);
@@ -223,7 +224,8 @@ public class Main {
                     found = true;
                 }
             }
-        } else if ("teacher".equals(user.post)) {
+        }
+        else if ("teacher".equals(user.post)) {
             for (Subject subject : DataBase.subjects.values()) {
                 if (subject.teacherIds.contains(user.id)) {
                     for (Section section : DataBase.sections.values()) {
@@ -523,6 +525,40 @@ public class Main {
 
     // ============== Admin Functions ==============
 
+    public static void subjectManagementMenu() {
+        while (true) {
+            System.out.println("\n========= SUBJECT MANAGEMENT MENU =========");
+            System.out.println("1. Create a new subject");
+            System.out.println("2. Show all subjects");
+            System.out.println("3. Edit subject");
+            System.out.println("4. Delete subject");
+            System.out.println("0. Back");
+
+            System.out.print("Choice: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    registerNewSubject();
+                    break;
+                case "2":
+                    showAllSubjects();
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    break;
+
+                case "0":
+                    return;
+                default:
+                    System.out.println("Wrong choice");
+            }
+
+        }
+    }
+
     public static void userManagementMenu() {
         while (true) {
             System.out.println("\n========= USERS MANAGEMENT MENU =========");
@@ -600,6 +636,28 @@ public class Main {
                     "User password: " + newUser.password
             );
         }
+    }
+
+    public static void registerNewSubject() {
+        System.out.println("\n========= CREATE NEW SUBJECT =========");
+
+        System.out.print("Name: ");
+        String name = scanner.nextLine();
+
+        ArrayList<User> users = DataBase.getAllUsers() ;
+
+
+        for(User user : users) {
+            if (user.post.equals("teacher")) {
+                System.out.println("");
+            }
+        }
+
+
+
+        Subject subject = DataBase.createSubjectDB(
+                name,
+        );
     }
 
     public static void showAllUsers() {
