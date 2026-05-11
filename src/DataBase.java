@@ -54,11 +54,15 @@ public class DataBase {
         users.put(user_admin.id, user_admin);
         users.put(pasha.id, pasha);
 
-        ArrayList<Integer> teachers = new ArrayList<>();
-        teachers.add(pasha.id);
+        ArrayList<Integer> teachers1 = new ArrayList<>();
+        ArrayList<Integer> teachers2 = new ArrayList<>();
+        teachers1.add(pasha.id);
+        teachers1.add(haura.id);
 
-        Subject math = new Subject("Math", teachers);
-        Subject english = new Subject("English", teachers);
+        teachers2.add(haura.id);
+
+        Subject math = new Subject("Math", teachers1);
+        Subject english = new Subject("English", teachers2);
 
         subjects.put(math.id, math);
         subjects.put(english.id, english);

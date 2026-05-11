@@ -1,5 +1,6 @@
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -507,7 +508,9 @@ public class Main {
 
     public static int readInt() {
         try {
+
             return Integer.parseInt(scanner.nextLine());
+
         } catch (NumberFormatException e) {
             return -1;
         }
@@ -548,8 +551,8 @@ public class Main {
                 case "3":
                     break;
                 case "4":
+                    deleteSubject();
                     break;
-
                 case "0":
                     return;
                 default:
@@ -644,20 +647,38 @@ public class Main {
         System.out.print("Name: ");
         String name = scanner.nextLine();
 
-        ArrayList<User> users = DataBase.getAllUsers() ;
+        ArrayList<User> users = DataBase.getAllUsers();
 
 
         for(User user : users) {
             if (user.post.equals("teacher")) {
-                System.out.println("");
+                System.out.println(
+                        user.id + " | " +
+                        user.name + " " +
+                        user.surname + " | " +
+                        user.department + " | " + user.post
+
+                );
             }
         }
-
-
+        System.out.print("Write teacher id: ");
+        ArrayList<Integer> _teacherIds = new ArrayList<>();
+        _teacherIds.add(readInt());
 
         Subject subject = DataBase.createSubjectDB(
                 name,
+                _teacherIds
         );
+
+        if (subject == null ) {
+            System.out.println("\nSubject with this name already exists.");
+        } else {
+            System.out.println(
+                    "\nNew subject ID: " + subject.id + "\n" +
+                    "New subject name: " + subject.name + "\n"
+            );
+        }
+
     }
 
     public static void showAllUsers() {
@@ -680,8 +701,32 @@ public class Main {
         ArrayList<Subject> subjects = DataBase.getAllSubjects();
 
         for (Subject subject : subjects) {
-            System.out.println(subject.id + " | " + subject.name);
+            StringBuilder writtenteacherIds = new StringBuilder();
+            for (int id : subject.teacherIds) {
+                writtenteacherIds.append(DataBase.getUserById(id).name + " | ");
+            }
+            System.out.println(
+                    "Subject ID: " + subject.id +
+                    "\nSubject Name: "+ subject.name +
+                    "\nTeachers:  " + writtenteacherIds);
+            System.out.println("===========================");
         }
+    }
+
+    public static void deleteSubject() {
+        System.out.println("\n========= SUBJECTS =========");
+
+        ArrayList<Subject> subjects = DataBase.getAllSubjects();
+
+        for (Subject subject : subjects) {
+            System.out.println(
+                    subject.id + " | " +
+                    subject.name );
+        }
+
+        System.out.println("\nWrite ID to delete: ");
+
+        DataBase.deleteSubjectDB(readInt());
     }
 
     public static void showAllSections() {
