@@ -1,4 +1,5 @@
 import javax.xml.crypto.Data;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -77,37 +78,6 @@ public class Main {
         }
     }
 
-    public static void showAdminMenu(User user) {
-        while (true) {
-            System.out.println("\n========= ADMIN MENU =========");
-            System.out.println("1. Users Management");
-            System.out.println("2. Subjects Management");
-            System.out.println("3. Grades Management");
-            System.out.println("4. Sections Management");
-            System.out.println("0. Back");
-
-            System.out.print("Choose: ");
-
-            String choice = scanner.nextLine();
-
-            switch (choice) {
-                case "1":
-                    userManagementMenu();
-                    break;
-                case "2":
-                    subjectManagementMenu();
-                    break;
-                case "3":
-                    showGrades(user);
-                    break;
-                case "0":
-                    return;
-                default:
-                    System.out.println("Wrong choice");
-            }
-        }
-    }
-
     public static void showStudentProfile(User user) {
         while (true) {
             System.out.println("\n========= STUDENT MENU =========");
@@ -137,6 +107,40 @@ public class Main {
         }
     }
 
+    public static void showAdminMenu(User user) {
+        while (true) {
+            System.out.println("\n========= ADMIN MENU =========");
+            System.out.println("1. Users Management");
+            System.out.println("2. Subjects Management");
+//            System.out.println("3. Grades Management");
+            System.out.println("3. Sections Management");
+            System.out.println("0. Back");
+
+            System.out.print("Choose: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    userManagementMenu();
+                    break;
+                case "2":
+                    subjectManagementMenu();
+                    break;
+//                case "3":
+//                    gradeManagementMenu();
+//                    break;
+                case "3":
+                    sectionManagementMenu();
+                    break;
+                case "0":
+                    return;
+                default:
+                    System.out.println("Wrong choice");
+            }
+        }
+    }
+
 
 
     // ============== User Functions ==============
@@ -155,6 +159,7 @@ public class Main {
         System.out.print("Choose: ");
 
         String choice = scanner.nextLine();
+
 
         switch (choice) {
             case "1":
@@ -280,8 +285,6 @@ public class Main {
             System.out.println("No grades yet.");
         }
     }
-
-
 
     // ============== Teacher Functions ==============
 
@@ -512,6 +515,7 @@ public class Main {
             return Integer.parseInt(scanner.nextLine());
 
         } catch (NumberFormatException e) {
+            // fix of return not always -1
             return -1;
         }
     }
@@ -524,9 +528,7 @@ public class Main {
         }
     }
 
-
-
-    // ============== Admin Functions ==============
+    // ============== Admin Menu Functions ==============
 
     public static void subjectManagementMenu() {
         while (true) {
@@ -549,6 +551,7 @@ public class Main {
                     showAllSubjects();
                     break;
                 case "3":
+                    editSubjects();
                     break;
                 case "4":
                     deleteSubject();
@@ -583,10 +586,11 @@ public class Main {
                     showAllUsers();
                     break;
                 case "3":
+                    editUser();
                     break;
                 case "4":
+                    deleteUser();
                     break;
-
                 case "0":
                     return;
                 default:
@@ -594,6 +598,114 @@ public class Main {
             }
 
         }
+    }
+
+    public static void sectionManagementMenu() {
+        while (true) {
+            System.out.println("\n========= SECTION MANAGEMENT MENU =========");
+            System.out.println("1. Create a new section");
+            System.out.println("2. Show all sections");
+            System.out.println("3. Edit section");
+            System.out.println("4. Delete section");
+            System.out.println("0. Back");
+
+            System.out.print("Choose: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    registerNewSection();
+                    break;
+
+                case "2":
+                    showAllSections();
+                    break;
+
+                case "3":
+                    editSection();
+                    break;
+
+                case "4":
+                    deleteSection();
+                    break;
+
+                case "0":
+                    return;
+
+                default:
+                    System.out.println("Wrong choice");
+            }
+
+        }
+    }
+
+    public static void gradeManagementMenu() {
+
+    }
+
+    // ============== Admin Functions ==============
+
+    public static void registerNewSection() {
+        System.out.println("\n========= REGISTER SECTION =========");
+
+        for (Subject subject : DataBase.getAllSubjects()) {
+            System.out.println(subject.id + " | " +subject.name);
+        }
+
+        System.out.print("Write ID of the Subject to add: ");
+        int subjectID = readInt();
+
+        System.out.print("Name for this section: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Day of the section: ");
+        String day = scanner.nextLine();
+
+        System.out.print("Time for this section: ");
+        String time = scanner.nextLine();
+
+        System.out.print("Room for this section: ");
+        String room = scanner.nextLine();
+
+        ArrayList<Integer> studentsIDs= new ArrayList<>();
+
+        System.out.println("\n========= STUDENTS TO ADD =========\n");
+
+        for (User user : DataBase.getAllUsers()) {
+            if (user.post.equals("student")){
+                System.out.println(user.id + " | " + user.name);
+            }
+        }
+
+        System.out.println(
+                "\nWrite list of the ids  Example: <321321 312123 321312> "
+                        + "\n" +
+                "OR Just one ID Example : <321321>");
+
+        System.out.print("Choice: ");
+        String[] ids = scanner.nextLine().split(" ");
+
+
+        for (String id : ids) {
+            studentsIDs.add(Integer.parseInt(id));
+        }
+
+        Section newSection = DataBase.createSectionDB(
+                subjectID, name, day, time, room, studentsIDs
+        );
+
+        if (newSection == null) {
+            System.out.println("Section was not created");
+
+        } else {
+            System.out.println("\nSection was created successfully!");
+            System.out.println(
+                    "New section ID: " + newSection.id + "\n" +
+                    "New section name: " + newSection.name + "\n"
+            );
+        }
+
     }
 
     public static void registerNewUser() {
@@ -621,7 +733,7 @@ public class Main {
         System.out.print("Birth date: ");
         String birth = scanner.nextLine();
 
-        User newUser = DataBase.registerUserDB(
+        User newUser = DataBase.createUserDB(
                 name,
                 surname,
                 department,
@@ -713,22 +825,6 @@ public class Main {
         }
     }
 
-    public static void deleteSubject() {
-        System.out.println("\n========= SUBJECTS =========");
-
-        ArrayList<Subject> subjects = DataBase.getAllSubjects();
-
-        for (Subject subject : subjects) {
-            System.out.println(
-                    subject.id + " | " +
-                    subject.name );
-        }
-
-        System.out.println("\nWrite ID to delete: ");
-
-        DataBase.deleteSubjectDB(readInt());
-    }
-
     public static void showAllSections() {
         System.out.println("\n========= SECTIONS =========");
 
@@ -771,5 +867,178 @@ public class Main {
                             grade.value
             );
         }
+    }
+
+    public static void editSection() {
+        showAllSections();
+
+        System.out.print("Write ID of the section: ");
+        int id = readInt();
+
+        Section section = DataBase.sections.get(id);
+
+        if (section == null) {
+            System.out.println("Section not found!");
+            return;
+        }
+
+        System.out.println("\n1. Edit ----> Name");
+        System.out.println("2. Edit ----> Day");
+        System.out.println("3. Edit ----> Time");
+        System.out.println("4. Edit ----> Room");
+        System.out.println("5. Edit ----> Students");
+
+        System.out.print("\nChoose option: ");
+        int option = readInt();
+
+        if (option == 1) {
+            System.out.print("Write new section name: ");
+            section.name = scanner.nextLine();
+
+        } else if (option == 2) {
+            System.out.print("Write new day: ");
+            section.day = scanner.nextLine();
+
+        } else if (option == 3) {
+            System.out.print("Write new time: ");
+            section.time = scanner.nextLine();
+
+        } else if (option == 4) {
+            System.out.print("Write new room: ");
+            section.room = scanner.nextLine();
+
+        } else if (option == 5) {
+            showAllUsers();
+
+            System.out.print("Write student IDs example: 1001 1002: ");
+            String input = scanner.nextLine().trim();
+
+            ArrayList<Integer> studentIds = new ArrayList<>();
+
+            if (!input.isEmpty()) {
+                String[] ids = input.split("\\s+");
+
+                for (String studentId : ids) {
+                    studentIds.add(Integer.parseInt(studentId));
+                }
+            }
+
+            section.studentIds = studentIds;
+
+        } else {
+            System.out.println("Wrong option!");
+            return;
+        }
+
+        System.out.println("Section updated successfully!");
+    }
+
+    public static void editSubjects() {
+        showAllSubjects();
+
+        System.out.print("Write ID of the subject: ");
+        int id = readInt();
+
+        Subject subject = DataBase.getSubjectById(id);
+
+        if (subject == null) {
+            System.out.println("Subject not found!");
+            return;
+        }
+
+        System.out.println("\n1. Edit ----> Name");
+        System.out.println("2. Edit ----> Teachers");
+
+        System.out.print("\nChoose option: ");
+        int option = readInt();
+
+        if (option == 1) {
+            System.out.print("Write new subject name: ");
+            String name = scanner.nextLine();
+
+            DataBase.updateSubjectDB(
+                    id,
+                    name,
+                    subject.teacherIds
+            );
+
+        } else if (option == 2) {
+            ArrayList<User> users = DataBase.getAllUsers();
+
+            for (User user : users) {
+
+                if (user.post.equals("teacher")) {
+                    System.out.println(
+                            user.id + " | " +
+                                    user.name + " " +
+                                    user.surname + " | " + user.post
+                    );
+                }
+
+            }
+
+            System.out.print("Write teacher IDs example: 10001 10002: ");
+            // trim убирает пробелы в начале и в конце
+            String input = scanner.nextLine().trim();
+
+            ArrayList<Integer> teacherIds = new ArrayList<>();
+
+            if (!input.isEmpty()) {
+
+                String[] ids = input.split("\\s+");
+
+                for (String teacherId : ids) {
+                    teacherIds.add(Integer.parseInt(teacherId));
+                }
+            }
+
+            DataBase.updateSubjectDB(
+                    id,
+                    subject.name,
+                    teacherIds
+            );
+
+        } else {
+            System.out.println("Wrong option!");
+            return;
+        }
+
+        System.out.println("Subject updated successfully!");
+    }
+
+    public static void editUser() {
+        showAllUsers();
+
+        System.out.print("Write ID of the user: ");
+        User userbyID = DataBase.getUserById(readInt());
+        editUserProfile(userbyID);
+
+    }
+
+    public static void deleteSubject() {
+
+        showAllSubjects();
+
+        System.out.print("\nWrite ID to delete: ");
+
+        DataBase.deleteSubjectDB(readInt());
+    }
+
+    public static void deleteUser() {
+
+        showAllUsers();
+
+        System.out.print("\nWrite ID to delete: ");
+
+        DataBase.deleteUserDB(readInt());
+    }
+
+    public static void deleteSection() {
+
+        showAllSections();
+
+        System.out.print("\nWrite ID to delete: ");
+
+        DataBase.deleteSectionDB(readInt());
     }
 }

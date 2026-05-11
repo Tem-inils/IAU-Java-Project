@@ -9,35 +9,6 @@ public class DataBase {
     public static HashMap<Integer, Grade> grades = new HashMap<>();
 
     static {
-        User albert = new User(
-                "Albert",
-                "Fayzullov",
-                "admin",
-                "123",
-                "Developer",
-                "student",
-                "06.10.2006"
-        );
-
-        User haura = new User(
-                "Haura",
-                "Hafizhah",
-                "haura",
-                "123",
-                "Business",
-                "teacher",
-                "30.10.2003"
-        );
-
-        User pasha = new User(
-                "Pavel",
-                "Goryakin",
-                "pasha",
-                "123",
-                "Math/English",
-                "teacher",
-                "05.03.1981"
-        );
 
         User user_admin = new User(
                 "admin",
@@ -49,56 +20,9 @@ public class DataBase {
                 "-----"
         );
 
-        users.put(albert.id, albert);
-        users.put(haura.id, haura);
+
         users.put(user_admin.id, user_admin);
-        users.put(pasha.id, pasha);
 
-        ArrayList<Integer> teachers1 = new ArrayList<>();
-        ArrayList<Integer> teachers2 = new ArrayList<>();
-        teachers1.add(pasha.id);
-        teachers1.add(haura.id);
-
-        teachers2.add(haura.id);
-
-        Subject math = new Subject("Math", teachers1);
-        Subject english = new Subject("English", teachers2);
-
-        subjects.put(math.id, math);
-        subjects.put(english.id, english);
-
-        ArrayList<Integer> mathStudents = new ArrayList<>();
-        mathStudents.add(albert.id);
-
-        ArrayList<Integer> englishStudents = new ArrayList<>();
-        englishStudents.add(albert.id);
-
-        Section mathSection = new Section(
-                math.id,
-                "Group A",
-                "Monday",
-                "10:00",
-                "A1001",
-                mathStudents
-        );
-
-        Section englishSection = new Section(
-                english.id,
-                "Group B",
-                "Tuesday",
-                "12:00",
-                "A1002",
-                englishStudents
-        );
-
-        sections.put(mathSection.id, mathSection);
-        sections.put(englishSection.id, englishSection);
-
-        Grade grade1 = new Grade(albert.id, mathSection.id, 5);
-        Grade grade2 = new Grade(albert.id, englishSection.id, 4);
-
-        grades.put(grade1.id, grade1);
-        grades.put(grade2.id, grade2);
     }
 
     // -------------------------------------------------------
@@ -144,75 +68,27 @@ public class DataBase {
         return new ArrayList<>(grades.values());
     }
 
+    public static Section getSectionById(int id) {
+        return sections.get(id);
+    }
+
+    public static Grade getGradeById(int id) {
+        return grades.get(id);
+    }
+
+    public static User getUserById(int id) {
+        return users.get(id);
+    }
+
+    public static Subject getSubjectById(int id) {
+        return subjects.get(id);
+    }
+
     // -------------------------------------------------------
-    // ================== UPDATES FUNCTIONS ==================
+    // ================== CREATE FUNCTIONS ==================
     // -------------------------------------------------------
 
-    public static void updateUserField(User user, String field, String value) {
-        if (user == null) {
-            return;
-        }
-
-        switch (field) {
-            case "name":
-                user.name = value;
-                break;
-            case "surname":
-                user.surname = value;
-                break;
-            case "login":
-                user.login = value;
-                break;
-            case "password":
-                user.password = value;
-                break;
-            case "department":
-                user.department = value;
-                break;
-            case "post":
-                user.post = value;
-                break;
-            case "birth":
-                user.date_of_birth = value;
-                break;
-            default:
-                System.out.println("Unknown field");
-        }
-    }
-
-    public static boolean deleteSectionDB(int id) {
-        Section removedSection = sections.remove(id);
-
-        if (removedSection == null) {
-            return false;
-        }
-
-        grades.values().removeIf(grade -> grade.section_id == id);
-
-        return true;
-    }
-
-    public static Grade addGradeToSubjectDB(int studentId, int sectionId, float value) {
-        Grade newGrade = new Grade(studentId, sectionId, value);
-
-        grades.put(newGrade.id, newGrade);
-
-        return newGrade;
-    }
-
-
-    public static boolean deleteGradeDB(int id) {
-        Grade removedGrade = grades.remove(id);
-        return removedGrade != null;
-    }
-
-
-
-    // ===========================================================
-    // ================== NOT USABLE FUNC ========================
-    // ===========================================================
-
-    public static User registerUserDB(
+    public static User createUserDB(
             String name,
             String surname,
             String department,
@@ -307,6 +183,9 @@ public class DataBase {
         return newSubject;
     }
 
+    // -------------------------------------------------------
+    // ================== UPDATES FUNCTIONS ==================
+    // -------------------------------------------------------
 
     public static Section updateSectionDB(
             int id,
@@ -331,14 +210,6 @@ public class DataBase {
         section.studentIds = studentIds;
 
         return section;
-    }
-
-    public static Section getSectionById(int id) {
-        return sections.get(id);
-    }
-
-    public static Grade getGradeById(int id) {
-        return grades.get(id);
     }
 
     public static Grade updateGradeDB(int id, int studentId, int sectionId, float value) {
@@ -368,6 +239,79 @@ public class DataBase {
         return subject;
     }
 
+    public static void updateUserField(User user, String field, String value) {
+        if (user == null) {
+            return;
+        }
+
+        switch (field) {
+            case "name":
+                user.name = value;
+                break;
+            case "surname":
+                user.surname = value;
+                break;
+            case "login":
+                user.login = value;
+                break;
+            case "password":
+                user.password = value;
+                break;
+            case "department":
+                user.department = value;
+                break;
+            case "post":
+                user.post = value;
+                break;
+            case "birth":
+                user.date_of_birth = value;
+                break;
+            default:
+                System.out.println("Unknown field");
+        }
+    }
+
+    // -------------------------------------------------------
+    // ================== DELETE FUNCTIONS ==================
+    // -------------------------------------------------------
+
+    public static boolean deleteSectionDB(int id) {
+        Section removedSection = sections.remove(id);
+
+        if (removedSection == null) {
+            return false;
+        }
+
+        grades.values().removeIf(grade -> grade.section_id == id);
+
+        return true;
+    }
+
+    public static boolean deleteGradeDB(int id) {
+        Grade removedGrade = grades.remove(id);
+        return removedGrade != null;
+    }
+
+    public static boolean deleteUserDB(int id) {
+        User removedUser = users.remove(id);
+
+        if (removedUser == null) {
+            return false;
+        }
+        // valueOf для того что бы он не посчитал ID - За индекс. Указывает что это значение
+        for (Subject subject : subjects.values()) {
+            subject.teacherIds.remove(Integer.valueOf(id));
+        }
+
+        for (Section section : sections.values()) {
+            section.studentIds.remove(Integer.valueOf(id));
+        }
+        // removeIf проверяте все значения у которых grade.student_id == user.id и удаляет их всех
+        grades.values().removeIf(grade -> grade.student_id == id);
+
+        return true;
+    }
+
     public static boolean deleteSubjectDB(int id) {
         Subject removedSubject = subjects.remove(id);
 
@@ -390,32 +334,26 @@ public class DataBase {
         return true;
     }
 
-    public static User getUserById(int id) {
-        return users.get(id);
-    }
+    // ===========================================================
+    // ================== NOT USABLE FUNC ========================
+    // ===========================================================
 
-    public static boolean deleteUserDB(int id) {
-        User removedUser = users.remove(id);
 
-        if (removedUser == null) {
-            return false;
-        }
 
-        for (Subject subject : subjects.values()) {
-            subject.teacherIds.remove(Integer.valueOf(id));
-        }
 
-        for (Section section : sections.values()) {
-            section.studentIds.remove(Integer.valueOf(id));
-        }
+    public static Grade addGradeToSubjectDB(int studentId, int sectionId, float value) {
+        Grade newGrade = new Grade(studentId, sectionId, value);
 
-        grades.values().removeIf(grade -> grade.student_id == id);
+        grades.put(newGrade.id, newGrade);
 
-        return true;
+        return newGrade;
     }
 
 
-    public static Subject getSubjectById(int id) {
-        return subjects.get(id);
-    }
+
+
+
+
+
+
 }
